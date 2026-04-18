@@ -31,10 +31,10 @@ const CPT_GROUPS = [
     { code: '90863', label: '90863 — Pharmacologic management add-on' },
   ]},
   { label: 'Psychiatric E/M Visits', codes: [
-    { code: '99212', label: '99212 — Established patient visit, low complexity (10 min)' },
-    { code: '99213', label: '99213 — Established patient visit, moderate complexity (15 min)' },
-    { code: '99214', label: '99214 — Established patient visit, mod-high complexity (25 min)' },
-    { code: '99215', label: '99215 — Established patient visit, high complexity (40 min)' },
+    { code: '99212', label: '99212 — Established patient visit, low complexity' },
+    { code: '99213', label: '99213 — Established patient visit, moderate complexity' },
+    { code: '99214', label: '99214 — Established patient visit, mod-high complexity' },
+    { code: '99215', label: '99215 — Established patient visit, high complexity' },
   ]},
   { label: 'Psychological Testing', codes: [
     { code: '96130', label: '96130 — Psychological testing evaluation, first hour' },
@@ -47,7 +47,7 @@ const CPT_GROUPS = [
     { code: '99493', label: '99493 — Psychiatric collaborative care, subsequent 60 min' },
   ]},
   { label: 'Health Behavior', codes: [
-    { code: '96156', label: '96156 — Health behavior assessment and intervention, 30 min' },
+    { code: '96156', label: '96156 — Health behavior assessment & intervention, 30 min' },
     { code: '96158', label: '96158 — Health behavior intervention, individual, 30 min' },
   ]},
   { label: 'Telehealth', codes: [
@@ -68,37 +68,32 @@ const DENIAL_REASONS = [
   { value: 'not_covered',       label: 'Service not covered under plan' },
   { value: 'wrong_cpt',         label: 'Incorrect CPT code or mismatch' },
   { value: 'bundling_error',    label: 'Bundling / unbundling issue' },
-  { value: 'wrong_modifier',    label: 'Missing or incorrect modifier (e.g. -95 for telehealth)' },
+  { value: 'wrong_modifier',    label: 'Missing or incorrect modifier' },
   { value: 'out_of_network',    label: 'Provider out of network' },
   { value: 'timely_filing',     label: 'Timely filing limit exceeded' },
   { value: 'upcoding_flag',     label: 'Flagged for potential upcoding' },
   { value: 'coordination',      label: 'Coordination of benefits issue' },
 ];
 
-const PLAN_TYPES = [
-  'PPO', 'HMO', 'EPO', 'HDHP',
-  'Medicaid', 'Medicare Advantage', 'Marketplace ACA',
-  'Employer self-funded', 'TRICARE',
-];
+const PLAN_TYPES = ['PPO','HMO','EPO','HDHP','Medicaid','Medicare Advantage','Marketplace ACA','Employer self-funded','TRICARE'];
 
 const VERDICT_META = {
-  RED:    { icon: '✕', label: 'Likely parity violation',   sub: 'Strong grounds to appeal under federal law' },
-  YELLOW: { icon: '!', label: 'Possible parity violation', sub: 'Appeal is worth filing — further review needed' },
-  GREEN:  { icon: '✓', label: 'Administrative denial',     sub: 'File a standard appeal addressing the specific reason' },
+  RED:    { icon: '✕', badge: 'Likely parity violation',   heading: 'Strong grounds to appeal under federal law' },
+  YELLOW: { icon: '!', badge: 'Possible parity violation', heading: 'This denial is worth challenging' },
+  GREEN:  { icon: '✓', badge: 'Administrative denial',     heading: 'File a standard appeal for this reason' },
 };
 
 export default function CheckPage() {
   const navigate = useNavigate();
-  const [tab, setTab]           = useState('manual'); // 'manual' | 'paste'
+  const [tab, setTab]             = useState('manual');
   const [denialText, setDenialText] = useState('');
-  const [parsing, setParsing]   = useState(false);
+  const [parsing, setParsing]     = useState(false);
+  const [parsed, setParsed]       = useState(false);
   const [parseError, setParseError] = useState('');
-  const [parsed, setParsed]     = useState(false);
-
-  const [form, setForm]       = useState({ cptCode: '', denialReason: '', planType: '' });
-  const [result, setResult]   = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError]     = useState('');
+  const [form, setForm]           = useState({ cptCode: '', denialReason: '', planType: '' });
+  const [result, setResult]       = useState(null);
+  const [loading, setLoading]     = useState(false);
+  const [error, setError]         = useState('');
   const set = k => e => setForm(f => ({ ...f, [k]: e.target.value }));
 
   async function handleParse() {
@@ -113,7 +108,7 @@ export default function CheckPage() {
       setParsed(true);
       setTab('manual');
     } catch {
-      setParseError('Could not parse letter. Fill the fields manually below.');
+      setParseError('Could not parse — fill the fields manually below.');
       setTab('manual');
     } finally {
       setParsing(false);
@@ -133,83 +128,77 @@ export default function CheckPage() {
     }
   }
 
+  const meta = result ? VERDICT_META[result.verdict] : null;
+
   return (
     <div className="page">
+
       {/* Hero */}
       <div className="hero">
-        <div className="hero-badge">⚖ MHPAEA Parity Checker</div>
-        <h1>Was your mental health claim denied unfairly?</h1>
-        <p>Over 70% of mental health denials violate federal parity law — and 73% of appeals that get filed are overturned. Check yours in seconds.</p>
-        <div style={{ display: 'flex', gap: '1.5rem', marginTop: '1.25rem', flexWrap: 'wrap' }}>
-          {[
-            { stat: '70%', label: 'of MH denials are wrongful' },
-            { stat: '73%', label: 'of appeals are overturned' },
-            { stat: '<1%', label: 'of patients ever appeal' },
-          ].map(({ stat, label }) => (
-            <div key={stat} style={{ display: 'flex', flexDirection: 'column' }}>
-              <span style={{ fontSize: '1.4rem', fontWeight: 700, lineHeight: 1 }}>{stat}</span>
-              <span style={{ fontSize: '.75rem', opacity: .75, marginTop: 3 }}>{label}</span>
+        <div className="hero-inner">
+          <div className="hero-badge">⚖ MHPAEA Federal Parity Law</div>
+          <h1>Your insurer denied your<br/><em>mental health claim.</em><br/>Fight back.</h1>
+          <p>Over 70% of mental health denials violate federal law. Check yours in seconds — and generate a lawyer-quality appeal letter instantly.</p>
+          <div className="hero-stats">
+            <div className="hero-stat">
+              <span className="hero-stat-value">70%</span>
+              <span className="hero-stat-label">of MH denials are wrongful</span>
             </div>
-          ))}
+            <div className="hero-divider" />
+            <div className="hero-stat">
+              <span className="hero-stat-value">73%</span>
+              <span className="hero-stat-label">of appeals are overturned</span>
+            </div>
+            <div className="hero-divider" />
+            <div className="hero-stat">
+              <span className="hero-stat-value">&lt;1%</span>
+              <span className="hero-stat-label">of patients ever appeal</span>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* How it works */}
-      <div style={{ display: 'flex', gap: '.75rem', marginBottom: '1.5rem' }}>
+      {/* Steps */}
+      <div className="steps-row">
         {[
-          { n: '1', title: 'Check your denial', desc: 'Enter your CPT code and denial reason — or paste the letter.' },
-          { n: '2', title: 'See your verdict',  desc: 'Instant RED/YELLOW/GREEN with the exact federal statute.' },
-          { n: '3', title: 'Generate & send',   desc: 'One click produces a lawyer-quality appeal letter.' },
-        ].map(({ n, title, desc }) => (
-          <div key={n} style={{
-            flex: 1, background: 'var(--surface)', border: '1px solid var(--border)',
-            borderRadius: 'var(--radius)', padding: '.9rem 1rem', boxShadow: 'var(--shadow)',
-          }}>
-            <div style={{
-              width: 24, height: 24, borderRadius: '50%', background: 'var(--blue)',
-              color: '#fff', fontSize: '.75rem', fontWeight: 700, display: 'flex',
-              alignItems: 'center', justifyContent: 'center', marginBottom: '.5rem',
-            }}>{n}</div>
-            <div style={{ fontWeight: 600, fontSize: '.85rem', marginBottom: 2 }}>{title}</div>
-            <div style={{ fontSize: '.78rem', color: 'var(--text-2)', lineHeight: 1.5 }}>{desc}</div>
+          { n: '1', title: 'Check your denial',  desc: 'Enter or paste your denial. We look up the federal statute.' },
+          { n: '2', title: 'See your verdict',    desc: 'Instant RED / YELLOW / GREEN with the exact law citation.' },
+          { n: '3', title: 'Generate & send',     desc: 'One click produces a formal appeal letter citing the statute.' },
+        ].map(s => (
+          <div className="step-card" key={s.n}>
+            <div className="step-num">{s.n}</div>
+            <div>
+              <div className="step-title">{s.title}</div>
+              <div className="step-desc">{s.desc}</div>
+            </div>
           </div>
         ))}
       </div>
 
       {/* Check card */}
       <div className="card">
-        {/* Tab toggle */}
-        <div style={{ display: 'flex', gap: 4, marginBottom: '1.25rem', background: 'var(--bg)', borderRadius: 8, padding: 4 }}>
-          {[
-            { id: 'manual', label: '📋 Enter manually' },
-            { id: 'paste',  label: '📄 Paste denial letter' },
-          ].map(t => (
-            <button
-              key={t.id}
-              type="button"
-              onClick={() => setTab(t.id)}
-              style={{
-                flex: 1, padding: '7px 12px', border: 'none', borderRadius: 6,
-                fontSize: '.83rem', fontWeight: 600, cursor: 'pointer',
-                background: tab === t.id ? 'var(--surface)' : 'transparent',
-                color: tab === t.id ? 'var(--text)' : 'var(--text-2)',
-                boxShadow: tab === t.id ? 'var(--shadow)' : 'none',
-                transition: 'all .15s',
-              }}
-            >
-              {t.label}
-            </button>
-          ))}
+        <div className="card-title">
+          <span className="card-icon">🔍</span>
+          Check your denial
+        </div>
+
+        <div className="tab-bar">
+          <button className={`tab-btn${tab === 'manual' ? ' active' : ''}`} onClick={() => setTab('manual')}>
+            📋 Enter manually
+          </button>
+          <button className={`tab-btn${tab === 'paste' ? ' active' : ''}`} onClick={() => setTab('paste')}>
+            📄 Paste denial letter
+          </button>
         </div>
 
         {tab === 'paste' ? (
           <div>
             <div className="field">
-              <label>Paste your denial letter</label>
+              <label>Your denial letter text</label>
               <textarea
                 value={denialText}
                 onChange={e => setDenialText(e.target.value)}
-                placeholder="Paste the full text of your insurance denial letter here. We'll automatically extract the CPT code, denial reason, and insurer details…"
+                placeholder="Paste the full text from your insurance denial letter here. We'll automatically extract the CPT code, denial reason, and other key details using AI…"
                 style={{ minHeight: 160 }}
               />
             </div>
@@ -218,43 +207,44 @@ export default function CheckPage() {
               onClick={handleParse}
               disabled={parsing || denialText.trim().length < 20}
             >
-              {parsing ? <><span className="spinner" /> Analyzing letter…</> : 'Extract details from letter →'}
+              {parsing
+                ? <><span className="spinner" /> Reading your letter with AI…</>
+                : 'Extract details from letter →'}
             </button>
             {parseError && <p className="error-msg">⚠ {parseError}</p>}
           </div>
         ) : (
           <form onSubmit={handleCheck}>
             {parsed && (
-              <div style={{
-                background: 'var(--green-light)', border: '1px solid var(--green-border)',
-                borderRadius: 'var(--radius-s)', padding: '9px 14px', fontSize: '.82rem',
-                color: 'var(--green)', marginBottom: '1rem', display: 'flex', gap: 6, alignItems: 'center',
-              }}>
-                ✓ Details extracted from your denial letter — review and confirm below.
+              <div className="success-banner">
+                <span>✓</span>
+                Details extracted from your denial letter — review and confirm below.
               </div>
             )}
+            {parseError && (
+              <div className="error-msg" style={{ marginBottom: '.85rem' }}>⚠ {parseError}</div>
+            )}
+
             <div className="field">
               <label>CPT code that was denied</label>
               <select value={form.cptCode} onChange={set('cptCode')} required>
                 <option value="">Select a CPT code…</option>
-                {CPT_GROUPS.map(group => (
-                  <optgroup key={group.label} label={group.label}>
-                    {group.codes.map(c => (
-                      <option key={c.code} value={c.code}>{c.label}</option>
-                    ))}
+                {CPT_GROUPS.map(g => (
+                  <optgroup key={g.label} label={g.label}>
+                    {g.codes.map(c => <option key={c.code} value={c.code}>{c.label}</option>)}
                   </optgroup>
                 ))}
               </select>
             </div>
+
             <div className="field">
               <label>Reason given for denial</label>
               <select value={form.denialReason} onChange={set('denialReason')} required>
                 <option value="">Select a reason…</option>
-                {DENIAL_REASONS.map(d => (
-                  <option key={d.value} value={d.value}>{d.label}</option>
-                ))}
+                {DENIAL_REASONS.map(d => <option key={d.value} value={d.value}>{d.label}</option>)}
               </select>
             </div>
+
             <div className="field">
               <label>Your insurance plan type</label>
               <select value={form.planType} onChange={set('planType')} required>
@@ -262,6 +252,7 @@ export default function CheckPage() {
                 {PLAN_TYPES.map(p => <option key={p} value={p}>{p}</option>)}
               </select>
             </div>
+
             <button type="submit" className="btn btn-primary btn-full" disabled={loading}>
               {loading ? <><span className="spinner" /> Analyzing…</> : 'Check for parity violation →'}
             </button>
@@ -271,32 +262,43 @@ export default function CheckPage() {
       </div>
 
       {/* Verdict */}
-      {result && (() => {
-        const meta = VERDICT_META[result.verdict];
-        return (
-          <div className={`verdict ${result.verdict}`}>
-            <div className="verdict-header">
-              <div className="verdict-icon">{meta.icon}</div>
-              <div>
-                <div className="verdict-label">{meta.label}</div>
-                <div className="verdict-title">{meta.sub}</div>
-              </div>
+      {result && meta && (
+        <div className={`verdict ${result.verdict}`}>
+          <div className="verdict-top">
+            <div className="verdict-icon-wrap">{meta.icon}</div>
+            <div>
+              <div className="verdict-badge">{meta.badge}</div>
+              <div className="verdict-heading">{meta.heading}</div>
             </div>
-            <div className="verdict-divider" />
-            <p className="verdict-body">{result.explanation}</p>
+          </div>
+
+          <div className="verdict-body-area">
+            <p className="verdict-explanation">{result.explanation}</p>
+
             {result.cptInfo && (
-              <p className="verdict-body" style={{ marginTop: '.5rem' }}>
-                <strong>Comparable medical service:</strong> {result.cptInfo.medicalEquivalentName} (CPT {result.cptInfo.medicalEquivalent}) — which your plan likely covers without the same restrictions.
-              </p>
+              <div className="verdict-equivalent">
+                <span style={{ fontSize: '1rem', flexShrink: 0 }}>⚖</span>
+                <span>
+                  <strong>Comparable medical service your plan covers:</strong>{' '}
+                  {result.cptInfo.medicalEquivalentName} (CPT {result.cptInfo.medicalEquivalent}).
+                  Your insurer cannot apply stricter rules to mental health care than to equivalent physical health care.
+                </span>
+              </div>
             )}
+
             {result.statute && (
-              <div className="statute-pill" style={{ marginTop: '.85rem' }}>📋 {result.statute}</div>
+              <div className="statute-chip">
+                <span>📋</span>
+                <span>{result.statute}</span>
+              </div>
             )}
+
             {result.verdict !== 'GREEN' && (
               <>
-                <div className="verdict-divider" />
+                <div className="divider" />
                 <button
-                  className="btn btn-primary btn-full"
+                  className="btn btn-primary"
+                  style={{ width: '100%' }}
                   onClick={() => navigate('/appeal', { state: { ...form, ...result } })}
                 >
                   Generate appeal letter →
@@ -304,8 +306,8 @@ export default function CheckPage() {
               </>
             )}
           </div>
-        );
-      })()}
+        </div>
+      )}
     </div>
   );
 }

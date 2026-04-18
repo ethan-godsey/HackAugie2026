@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { SEED_APPEALS } from '../data/seedData.js';
+import { getUserFromReq } from './auth.js';
 
 export const trackerRouter = Router();
 
@@ -11,9 +12,12 @@ for (const a of SEED_APPEALS) {
 }
 
 trackerRouter.post('/', (req, res) => {
+  const user = getUserFromReq(req);
   const id = `appeal_${Date.now()}`;
   const a = {
-    id, ...req.body, status: 'submitted',
+    id, ...req.body,
+    userId: user?.id || null,
+    status: 'submitted',
     submittedAt: new Date().toISOString(),
     history: [{ status: 'submitted', date: new Date().toISOString() }],
   };
