@@ -1,0 +1,44 @@
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --red:#E24B4A;--yellow:#BA7517;--green:#3B6D11;
+  --red-bg:#FCEBEB;--yellow-bg:#FAEEDA;--green-bg:#EAF3DE;
+  --border:rgba(0,0,0,0.12);--radius:10px;
+}
+body{font-family:system-ui,sans-serif;background:#f8f8f6;color:#1a1a18;line-height:1.6}
+.page{max-width:680px;margin:0 auto;padding:2rem 1.25rem}
+.page-title{font-size:1.5rem;font-weight:600;margin-bottom:.25rem}
+.page-sub{font-size:.9rem;color:#666;margin-bottom:2rem}
+.card{background:#fff;border:.5px solid var(--border);border-radius:var(--radius);padding:1.25rem;margin-bottom:1rem}
+label{display:block;font-size:.8rem;color:#555;margin-bottom:4px;margin-top:14px}
+select,input,textarea{width:100%;padding:9px 12px;border:.5px solid var(--border);border-radius:8px;font-size:.9rem;background:#fafaf8;outline:none;font-family:inherit}
+select:focus,input:focus,textarea:focus{border-color:#888}
+textarea{resize:vertical;min-height:80px}
+.btn{display:inline-block;padding:10px 20px;border-radius:8px;font-size:.9rem;font-weight:500;cursor:pointer;border:.5px solid var(--border);background:#fff;transition:background .15s;font-family:inherit}
+.btn:hover{background:#f0f0ee}
+.btn-primary{background:#1a1a18;color:#fff;border-color:#1a1a18}
+.btn-primary:hover{background:#333}
+.btn-full{width:100%;text-align:center;margin-top:1rem}
+.verdict{border-radius:var(--radius);padding:1.25rem;margin-top:1.5rem}
+.verdict.RED{background:var(--red-bg);border:1px solid var(--red)}
+.verdict.YELLOW{background:var(--yellow-bg);border:1px solid var(--yellow)}
+.verdict.GREEN{background:var(--green-bg);border:1px solid var(--green)}
+.verdict-label{font-size:.75rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase}
+.verdict.RED .verdict-label{color:var(--red)}
+.verdict.YELLOW .verdict-label{color:var(--yellow)}
+.verdict.GREEN .verdict-label{color:var(--green)}
+.verdict-title{font-size:1.1rem;font-weight:600;margin:4px 0 8px}
+.verdict-body{font-size:.88rem;color:#444}
+.statute-pill{display:inline-block;font-size:.75rem;background:rgba(0,0,0,.06);border-radius:20px;padding:3px 10px;margin-top:10px;color:#555}
+.nav{display:flex;gap:1rem;margin-bottom:2rem}
+.nav a{font-size:.85rem;color:#666;text-decoration:none;padding:4px 0;border-bottom:2px solid transparent}
+.nav a.active{color:#1a1a18;border-bottom-color:#1a1a18}
+.letter-box{background:#fafaf8;border:.5px solid var(--border);border-radius:8px;padding:1.25rem;font-size:.85rem;white-space:pre-wrap;line-height:1.7;margin-top:1rem;max-height:420px;overflow-y:auto}
+.status-pill{display:inline-block;font-size:.75rem;font-weight:500;padding:3px 10px;border-radius:20px}
+.status-pill.submitted{background:#E6F1FB;color:#0C447C}
+.status-pill.appealed{background:var(--yellow-bg);color:var(--yellow)}
+.status-pill.won{background:var(--green-bg);color:var(--green)}
+.status-pill.lost{background:var(--red-bg);color:var(--red)}
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid #ccc;border-top-color:#333;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle}
+@keyframes spin{to{transform:rotate(360deg)}}
+.row{display:flex;gap:10px}
+.row>*{flex:1}
