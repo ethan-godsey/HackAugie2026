@@ -43,28 +43,30 @@ Format as a formal letter with today's date. Be direct and cite law precisely.`;
 export async function parseDenialLetter(text) {
   const prompt = `You are a medical billing expert. Extract structured data from the insurance denial letter below.
 
-Return ONLY valid JSON with these exact keys (use null if not found):
+Return ONLY a valid JSON object — no markdown, no explanation, just the JSON.
+Use null for any field you cannot find.
+
 {
-  "cptCode": "string or null — the CPT/procedure code that was denied",
-  "denialReason": "one of: medical_necessity | visit_cap | prior_auth | documentation | not_covered | wrong_cpt | bundling_error | wrong_modifier | out_of_network | timely_filing | upcoding_flag | coordination | null",
-  "insurerName": "string or null",
-  "planId": "string or null — member ID or plan ID",
-  "denialDate": "YYYY-MM-DD or null",
-  "diagnosisCode": "ICD-10 code or null"
+  "cptCode": "the CPT procedure code that was denied (digits only, e.g. 90837) or null",
+  "denialReason": "exactly one of: medical_necessity | visit_cap | prior_auth | documentation | not_covered | wrong_cpt | bundling_error | wrong_modifier | out_of_network | timely_filing | upcoding_flag | coordination — pick the closest match or null",
+  "insurerName": "the insurance company name or null",
+  "planId": "member ID or plan ID or null",
+  "denialDate": "denial date as YYYY-MM-DD or null",
+  "diagnosisCode": "ICD-10 diagnosis code or null"
 }
 
 DENIAL LETTER:
 ${text}`;
 
   const msg = await client.messages.create({
-    model: 'claude-haiku-4-5-20251001',
-    max_tokens: 256,
+    model: 'claude-sonnet-4-6',
+    max_tokens: 512,
     messages: [{ role: 'user', content: prompt }],
   });
 
   try {
-    const raw = msg.content[0].text.trim();
-    const json = raw.match(/\{[\s\S]*\}/)?.[0];
+    const raw  = msg.content[0].text.trim();
+    const json = raw.match(/\{[\s\S]*?\}/)?.[0];
     return JSON.parse(json);
   } catch {
     return null;
