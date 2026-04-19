@@ -1,5 +1,5 @@
 import Anthropic from '@anthropic-ai/sdk';
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY || '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' });
 
 export async function generateAppealLetter(params) {
   const {
