@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
+import { useAuth } from '../context/AuthContext.jsx';
 
 const CPT_GROUPS = [
   { label: 'Diagnostic Evaluations', codes: [
@@ -98,6 +99,7 @@ const VERDICT_META = {
 
 export default function CheckPage() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [tab, setTab]               = useState('manual');
   const [denialText, setDenialText] = useState('');
   const [parsing, setParsing]       = useState(false);
@@ -193,6 +195,25 @@ export default function CheckPage() {
           </div>
         ))}
       </div>
+
+      {/* Save prompt for guests */}
+      {!user && (
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 10,
+          padding: '10px 14px', marginBottom: '1rem',
+          background: '#F8FAFF', border: '1px solid var(--border-2)',
+          borderRadius: 'var(--r-s)', fontSize: '.82rem', color: 'var(--text-2)',
+          flexWrap: 'wrap',
+        }}>
+          <span>🔒</span>
+          <span>
+            <Link to="/auth" state={{ tab: 'login' }} style={{ color: 'var(--brand)', fontWeight: 600 }}>Sign in</Link>
+            {' '}or{' '}
+            <Link to="/auth" state={{ tab: 'register' }} style={{ color: 'var(--brand)', fontWeight: 600 }}>create a free account</Link>
+            {' '}to save your appeal letters.
+          </span>
+        </div>
+      )}
 
       {/* Check card */}
       <div className="card">
