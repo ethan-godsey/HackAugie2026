@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext.jsx';
+import { Lock, ClipboardList, Download } from 'lucide-react';
 
 const INSURER_APPEALS_ADDRESS = {
   'unitedhealthcare': { name: 'UnitedHealthcare', addr: 'UnitedHealthcare Appeals\nP.O. Box 30432\nSalt Lake City, UT 84130' },
@@ -142,7 +143,7 @@ export default function TrackerPage() {
     return (
       <div className="page">
         <div className="card" style={{ textAlign: 'center', padding: '3rem 2rem' }}>
-          <div style={{ fontSize: '2.75rem', marginBottom: '1rem' }}>🔒</div>
+          <div style={{ marginBottom: '1rem' }}><Lock size={40} strokeWidth={1.5} style={{ color: 'var(--brand)' }} /></div>
           <h2 style={{ fontSize: '1.25rem', fontWeight: 800, letterSpacing: '-.02em', marginBottom: '.5rem' }}>
             Sign in to view your appeals
           </h2>
@@ -178,7 +179,7 @@ export default function TrackerPage() {
       {!loading && myAppeals.length === 0 && (
         <div className="card">
           <div className="empty">
-            <div className="empty-icon">📋</div>
+            <div className="empty-icon"><ClipboardList size={40} strokeWidth={1.5} style={{ color: 'var(--text-3)' }} /></div>
             <div className="empty-title">No appeals tracked yet</div>
             <div className="empty-sub">Generate your first letter to get started.</div>
             <button className="btn btn-primary" style={{ marginTop: '1.1rem' }} onClick={() => navigate('/appeal')}>
@@ -212,10 +213,10 @@ export default function TrackerPage() {
             {ap.letter && (
               <button
                 className="btn btn-primary btn-sm"
-                style={{ flexShrink: 0 }}
+                style={{ flexShrink: 0, display: 'flex', alignItems: 'center', gap: 6 }}
                 onClick={() => downloadPDF(ap.letter, ap.patientName, ap.insurerName)}
               >
-                ↓ Download letter
+                <Download size={14} /> Download letter
               </button>
             )}
           </div>

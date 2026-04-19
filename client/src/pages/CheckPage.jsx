@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext.jsx';
+import { Search, ClipboardList, FileSearch, Scale, BookOpen, X, AlertTriangle, Check, Lock, AlertCircle, MessageSquare } from 'lucide-react';
 
 const CPT_GROUPS = [
   { label: 'Diagnostic Evaluations', codes: [
@@ -92,9 +93,9 @@ const chipStyle = {
 };
 
 const VERDICT_META = {
-  RED:    { icon: '✕', badge: 'Likely parity violation',   heading: 'Strong grounds to appeal under federal law' },
-  YELLOW: { icon: '!', badge: 'Possible parity violation', heading: 'This denial is worth challenging' },
-  GREEN:  { icon: '✓', badge: 'Administrative denial',     heading: 'File a standard appeal for this reason' },
+  RED:    { icon: <X size={18} strokeWidth={3} />,              badge: 'Likely parity violation',   heading: 'Strong grounds to appeal under federal law' },
+  YELLOW: { icon: <AlertTriangle size={18} strokeWidth={3} />,  badge: 'Possible parity violation', heading: 'This denial is worth challenging' },
+  GREEN:  { icon: <Check size={18} strokeWidth={3} />,          badge: 'Administrative denial',     heading: 'File a standard appeal for this reason' },
 };
 
 export default function CheckPage() {
@@ -157,7 +158,7 @@ export default function CheckPage() {
       {/* Hero */}
       <div className="hero">
         <div className="hero-inner">
-          <div className="hero-badge">⚖ MHPAEA Federal Parity Law</div>
+          <div className="hero-badge"><Scale size={13} /> MHPAEA Federal Parity Law</div>
           <h1>Your insurer denied your<br/><em>mental health claim.</em><br/>Fight back.</h1>
           <p>Over 70% of mental health denials violate federal law. Check yours in seconds — and generate a lawyer-quality appeal letter instantly.</p>
           <div className="hero-stats">
@@ -205,7 +206,7 @@ export default function CheckPage() {
           borderRadius: 'var(--r-s)', fontSize: '.82rem', color: 'var(--text-2)',
           flexWrap: 'wrap',
         }}>
-          <span>🔒</span>
+          <Lock size={14} style={{ flexShrink: 0 }} />
           <span>
             <Link to="/auth" state={{ tab: 'login' }} style={{ color: 'var(--brand)', fontWeight: 600 }}>Sign in</Link>
             {' '}or{' '}
@@ -218,16 +219,16 @@ export default function CheckPage() {
       {/* Check card */}
       <div className="card">
         <div className="card-title">
-          <span className="card-icon">🔍</span>
+          <span className="card-icon"><Search size={16} /></span>
           Check your denial
         </div>
 
         <div className="tab-bar">
-          <button className={`tab-btn${tab === 'manual' ? ' active' : ''}`} onClick={() => setTab('manual')}>
-            📋 Enter manually
+          <button className={`tab-btn${tab === 'manual' ? ' active' : ''}`} onClick={() => setTab('manual')} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+            <ClipboardList size={15} /> Enter manually
           </button>
-          <button className={`tab-btn${tab === 'paste' ? ' active' : ''}`} onClick={() => setTab('paste')}>
-            📄 Paste denial letter
+          <button className={`tab-btn${tab === 'paste' ? ' active' : ''}`} onClick={() => setTab('paste')} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+            <FileSearch size={15} /> Paste denial letter
           </button>
         </div>
 
@@ -253,7 +254,7 @@ export default function CheckPage() {
                     ? <><span className="spinner" /> Reading your letter with AI…</>
                     : 'Extract details from letter →'}
                 </button>
-                {parseError && <p className="error-msg">⚠ {parseError}</p>}
+                {parseError && <p className="error-msg"><AlertCircle size={14} style={{ flexShrink: 0 }} /> {parseError}</p>}
               </>
             ) : (
               <div>
@@ -266,7 +267,7 @@ export default function CheckPage() {
                   marginBottom: '1rem',
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: '.55rem' }}>
-                    <span style={{ fontSize: '1.1rem' }}>💬</span>
+                    <MessageSquare size={16} style={{ flexShrink: 0, color: 'var(--brand-dark)' }} />
                     <strong style={{ color: 'var(--brand-dark)', fontSize: '.9rem' }}>What this denial means for you</strong>
                   </div>
                   <p style={{ fontSize: '.9rem', color: 'var(--text-1)', lineHeight: 1.65, margin: 0 }}>
@@ -338,7 +339,7 @@ export default function CheckPage() {
               </div>
             )}
             {parseError && (
-              <div className="error-msg" style={{ marginBottom: '.85rem' }}>⚠ {parseError}</div>
+              <div className="error-msg" style={{ marginBottom: '.85rem' }}><AlertCircle size={14} style={{ flexShrink: 0 }} /> {parseError}</div>
             )}
 
             <div className="field">
@@ -372,7 +373,7 @@ export default function CheckPage() {
             <button type="submit" className="btn btn-primary btn-full" disabled={loading}>
               {loading ? <><span className="spinner" /> Analyzing…</> : 'Check for parity violation →'}
             </button>
-            {error && <p className="error-msg">⚠ {error}</p>}
+            {error && <p className="error-msg"><AlertCircle size={14} style={{ flexShrink: 0 }} /> {error}</p>}
           </form>
         )}
       </div>
@@ -393,7 +394,7 @@ export default function CheckPage() {
 
             {result.cptInfo && (
               <div className="verdict-equivalent">
-                <span style={{ fontSize: '1rem', flexShrink: 0 }}>⚖</span>
+                <Scale size={16} style={{ flexShrink: 0, marginTop: 2 }} />
                 <span>
                   <strong>Comparable medical service your plan covers:</strong>{' '}
                   {result.cptInfo.medicalEquivalentName} (CPT {result.cptInfo.medicalEquivalent}).
@@ -404,7 +405,7 @@ export default function CheckPage() {
 
             {result.statute && (
               <div className="statute-chip">
-                <span>📋</span>
+                <BookOpen size={13} />
                 <span>{result.statute}</span>
               </div>
             )}

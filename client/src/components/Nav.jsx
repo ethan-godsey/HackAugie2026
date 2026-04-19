@@ -1,23 +1,12 @@
 import { NavLink, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import { LogoWordmark } from './Logo.jsx';
+import { Search, FileText, ClipboardList, LogOut, UserCircle } from 'lucide-react';
 
 const ITEMS = [
-  {
-    to: '/', short: 'Check',
-    icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>,
-    label: 'Check denial',
-  },
-  {
-    to: '/appeal', short: 'Appeal',
-    icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>,
-    label: 'Generate appeal',
-  },
-  {
-    to: '/tracker', short: 'My Appeals',
-    icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>,
-    label: 'My appeals',
-  },
+  { to: '/',        short: 'Check',      icon: <Search size={20} />,        label: 'Check denial' },
+  { to: '/appeal',  short: 'Appeal',     icon: <FileText size={20} />,      label: 'Generate appeal' },
+  { to: '/tracker', short: 'My Appeals', icon: <ClipboardList size={20} />, label: 'My appeals' },
 ];
 
 function Avatar({ name }) {
@@ -90,16 +79,12 @@ export default function Nav() {
             onClick={logout}
             style={{ border: 'none', background: 'none', cursor: 'pointer', fontFamily: 'inherit' }}
           >
-            <span className="bottom-nav-icon">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-            </span>
+            <span className="bottom-nav-icon"><LogOut size={20} /></span>
             <span>Sign out</span>
           </button>
         ) : (
           <Link className="bottom-nav-item" to="/auth" state={{ tab: 'login' }}>
-            <span className="bottom-nav-icon">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-            </span>
+            <span className="bottom-nav-icon"><UserCircle size={20} /></span>
             <span>Sign in</span>
           </Link>
         )}
