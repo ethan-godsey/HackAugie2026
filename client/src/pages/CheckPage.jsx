@@ -158,7 +158,15 @@ export default function CheckPage() {
       {/* Hero */}
       <div className="hero">
         <div className="hero-inner">
-          <div className="hero-badge"><Scale size={13} /> MHPAEA Federal Parity Law</div>
+          <a
+            className="hero-badge"
+            href="https://www.cms.gov/marketplace/private-health-insurance/mental-health-parity-addiction-equity"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ textDecoration: 'none' }}
+          >
+            <Scale size={13} /> MHPAEA Federal Parity Law ↗
+          </a>
           <h1>Your insurer denied your<br/><em>mental health claim,</em> Fight back!</h1>
           <p>Over 70% of mental health denials violate federal law. Check yours in seconds — and generate a lawyer-quality appeal letter instantly.</p>
           <div className="hero-stats">

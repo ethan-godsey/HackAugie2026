@@ -65,6 +65,7 @@
   position: absolute;
   border-radius: 50%;
   filter: blur(90px);
+  will-change: transform;
 }
 
 /* Lavender — calm & peace */
@@ -72,35 +73,30 @@
   width: 700px; height: 700px;
   background: radial-gradient(circle, rgba(167,139,250,.28), transparent 65%);
   top: -180px; left: -140px;
-  animation: orb1 28s ease-in-out infinite;
 }
 /* Teal/emerald — growth & healing */
 .bg-orb-2 {
   width: 550px; height: 550px;
   background: radial-gradient(circle, rgba(52,211,153,.22), transparent 65%);
   bottom: 10%; right: -120px;
-  animation: orb2 34s ease-in-out infinite;
 }
 /* Sky blue — clarity & hope */
 .bg-orb-3 {
   width: 480px; height: 480px;
   background: radial-gradient(circle, rgba(125,211,252,.2), transparent 65%);
   top: 40%; left: 30%;
-  animation: orb3 22s ease-in-out infinite;
 }
 /* Rose — warmth & compassion */
 .bg-orb-4 {
   width: 400px; height: 400px;
   background: radial-gradient(circle, rgba(251,207,232,.15), transparent 65%);
   bottom: 20%; left: -60px;
-  animation: orb4 30s ease-in-out infinite;
 }
 /* Indigo core — grounding */
 .bg-orb-5 {
   width: 600px; height: 600px;
   background: radial-gradient(circle, rgba(99,102,241,.18), transparent 65%);
   top: 55%; right: 10%;
-  animation: orb5 38s ease-in-out infinite;
 }
 
 /* Breathing circle — gentle inhale/exhale rhythm */
@@ -114,30 +110,6 @@
   animation: breathe 7s ease-in-out infinite;
 }
 
-@keyframes orb1 {
-  0%,100% { transform: translate(0,0) scale(1); }
-  33%     { transform: translate(80px, 60px) scale(1.07); }
-  66%     { transform: translate(-40px, 100px) scale(0.94); }
-}
-@keyframes orb2 {
-  0%,100% { transform: translate(0,0) scale(1); }
-  40%     { transform: translate(-90px, -60px) scale(1.08); }
-  70%     { transform: translate(50px, -100px) scale(0.95); }
-}
-@keyframes orb3 {
-  0%,100% { transform: translate(0,0) scale(1); }
-  25%     { transform: translate(60px, -80px) scale(1.1); }
-  75%     { transform: translate(-70px, 50px) scale(0.92); }
-}
-@keyframes orb4 {
-  0%,100% { transform: translate(0,0) scale(1); }
-  50%     { transform: translate(100px, -70px) scale(1.12); }
-}
-@keyframes orb5 {
-  0%,100% { transform: translate(0,0) scale(1); }
-  30%     { transform: translate(-80px, 60px) scale(1.06); }
-  70%     { transform: translate(60px, -40px) scale(0.96); }
-}
 @keyframes breathe {
   0%,100% { transform: translate(-50%,-50%) scale(1);   opacity: .6; }
   50%     { transform: translate(-50%,-50%) scale(1.55); opacity: 1; }
