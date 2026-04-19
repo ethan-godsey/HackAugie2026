@@ -57,9 +57,10 @@ html { scroll-behavior: smooth; }
 
 body {
   font-family: 'Inter', system-ui, sans-serif;
-  background-color: #D4DFEF;
-  background-image: radial-gradient(circle, rgba(37,99,235,.18) 1.5px, transparent 1.5px);
-  background-size: 22px 22px;
+  background:
+    radial-gradient(circle at 1px 1px, rgba(255,255,255,.07) 1px, transparent 0) 0 0 / 24px 24px,
+    linear-gradient(150deg, #0D1B4A 0%, #1E3A8A 45%, #2563EB 100%);
+  background-attachment: fixed;
   color: var(--text);
   line-height: 1.6;
   min-height: 100dvh;
@@ -158,8 +159,8 @@ body {
 }
 
 .page-header { margin-bottom: 1.75rem; }
-.page-title  { font-size: 1.5rem; font-weight: 800; letter-spacing: -.03em; }
-.page-sub    { font-size: .9rem; color: var(--text-2); margin-top: .4rem; line-height: 1.55; }
+.page-title  { font-size: 1.5rem; font-weight: 800; letter-spacing: -.03em; color: #fff; }
+.page-sub    { font-size: .9rem; color: rgba(255,255,255,.62); margin-top: .4rem; line-height: 1.55; }
 
 /* ─── Hero ───────────────────────────────────────────────────────────────── */
 .hero {
@@ -378,6 +379,28 @@ textarea { resize: vertical; min-height: 120px; line-height: 1.6; }
 
 .btn-ghost { background: transparent; border-color: transparent; color: var(--text-2); }
 .btn-ghost:hover:not(:disabled) { background: var(--bg); border-color: var(--border); }
+
+/* Nav-specific button overrides — always-visible border, shadow hover only */
+.topnav .btn-ghost {
+  background: transparent;
+  border: 1.5px solid rgba(255,255,255,.28);
+  color: rgba(220,235,255,.9);
+}
+.topnav .btn-ghost:hover:not(:disabled) {
+  background: transparent;
+  border-color: rgba(255,255,255,.45);
+  box-shadow: 0 4px 18px rgba(0,0,0,.35);
+  color: #fff;
+}
+.topnav .btn-primary {
+  border: 1.5px solid #16A34A;
+}
+.topnav .btn-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #16A34A 0%, #15803D 100%);
+  border-color: #16A34A;
+  box-shadow: 0 4px 18px rgba(22,163,74,.45);
+  transform: none;
+}
 
 .btn:disabled { opacity: .55; cursor: not-allowed; }
 .btn-full { width: 100%; margin-top: 1.25rem; }

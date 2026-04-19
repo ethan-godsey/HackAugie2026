@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext.jsx';
+import { User, ClipboardList, Building2, Stethoscope, FileText, Check, Copy, Download, Lock, AlertCircle } from 'lucide-react';
 
 const CPT_GROUPS = [
   { label: 'Diagnostic Evaluations', codes: [
@@ -309,7 +310,7 @@ export default function AppealPage() {
 
       {fromCheck && (
         <div className="success-banner" style={{ marginBottom: '1rem' }}>
-          <span>✓</span>
+          <Check size={15} style={{ flexShrink: 0 }} />
           Claim details pre-filled from your parity check — review and complete the form below.
         </div>
       )}
@@ -319,7 +320,7 @@ export default function AppealPage() {
         {/* Section 1: Your personal info */}
         <div className="card">
           <div className="card-title">
-            <span className="card-icon">👤</span>
+            <span className="card-icon"><User size={16} /></span>
             Your information
           </div>
 
@@ -342,7 +343,7 @@ export default function AppealPage() {
         {/* Section 2: Claim details */}
         <div className="card">
           <div className="card-title">
-            <span className="card-icon">📋</span>
+            <span className="card-icon"><ClipboardList size={16} /></span>
             Claim &amp; denial details
           </div>
 
@@ -384,7 +385,7 @@ export default function AppealPage() {
         {/* Section 3: Insurance details */}
         <div className="card">
           <div className="card-title">
-            <span className="card-icon">🏥</span>
+            <span className="card-icon"><Building2 size={16} /></span>
             Insurance details
           </div>
 
@@ -403,7 +404,7 @@ export default function AppealPage() {
         {/* Section 4: Provider info */}
         <div className="card">
           <div className="card-title">
-            <span className="card-icon">🩺</span>
+            <span className="card-icon"><Stethoscope size={16} /></span>
             Provider details <span style={{ fontWeight: 400, fontSize: '.8rem', color: 'var(--text-3)', marginLeft: 4 }}>(optional but strengthens your letter)</span>
           </div>
 
@@ -422,7 +423,7 @@ export default function AppealPage() {
         <button type="submit" className="btn btn-primary btn-full" disabled={loading}>
           {loading ? <><span className="spinner" /> Generating with AI…</> : 'Generate appeal letter →'}
         </button>
-        {error && <p className="error-msg">⚠ {error}</p>}
+        {error && <p className="error-msg"><AlertCircle size={14} style={{ flexShrink: 0 }} /> {error}</p>}
       </form>
 
       {/* Letter result */}
@@ -430,18 +431,19 @@ export default function AppealPage() {
         <div className="card" id="letter-result" style={{ marginTop: '1.5rem' }}>
           <div className="letter-header">
             <div className="card-title" style={{ margin: 0 }}>
-              <span className="card-icon">📄</span>
+              <span className="card-icon"><FileText size={16} /></span>
               Your appeal letter
             </div>
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-              <button className="btn btn-sm" onClick={handleCopy}>
-                {copied ? '✓ Copied!' : 'Copy text'}
+              <button className="btn btn-sm" onClick={handleCopy} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                {copied ? <><Check size={14} /> Copied!</> : <><Copy size={14} /> Copy text</>}
               </button>
               <button
                 className="btn btn-primary btn-sm"
+                style={{ display: 'flex', alignItems: 'center', gap: 6 }}
                 onClick={() => downloadPDF(letter, form.patientName, form.insurerName)}
               >
-                ↓ Download PDF
+                <Download size={14} /> Download PDF
               </button>
             </div>
           </div>
@@ -474,7 +476,7 @@ export default function AppealPage() {
               alignItems: 'center',
               gap: 8,
             }}>
-              <span>✓</span>
+              <Check size={15} style={{ flexShrink: 0 }} />
               Appeal saved to your tracker.{' '}
               <Link to="/tracker" style={{ color: '#166534', fontWeight: 600 }}>View my appeals →</Link>
             </div>
@@ -492,7 +494,7 @@ export default function AppealPage() {
               gap: 8,
               flexWrap: 'wrap',
             }}>
-              <span>🔒</span>
+              <Lock size={14} style={{ flexShrink: 0 }} />
               <span>
                 <Link to="/auth" state={{ tab: 'login' }} style={{ color: 'var(--brand)', fontWeight: 600 }}>Sign in</Link>
                 {' '}or{' '}
