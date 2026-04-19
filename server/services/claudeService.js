@@ -46,6 +46,40 @@ FORMATTING RULES — follow exactly:
   return msg.content[0].text;
 }
 
+export async function parseDenialLetterFromImage(base64Data, mediaType) {
+  const prompt = `You are a patient advocate. Look at this insurance denial letter image and return ONLY a valid JSON object — no markdown, no explanation.
+
+{
+  "summary": "2-3 sentence plain English explanation of what this denial means for the patient.",
+  "cptCode": "the CPT procedure code that was denied or null",
+  "denialReason": "exactly one of: medical_necessity | visit_cap | prior_auth | documentation | not_covered | wrong_cpt | bundling_error | wrong_modifier | out_of_network | timely_filing | upcoding_flag | coordination — or null",
+  "insurerName": "the insurance company name or null",
+  "planId": "member ID or plan ID or null",
+  "denialDate": "denial date as YYYY-MM-DD or null",
+  "diagnosisCode": "ICD-10 diagnosis code or null"
+}`;
+
+  const msg = await client.messages.create({
+    model: 'claude-sonnet-4-6',
+    max_tokens: 700,
+    messages: [{
+      role: 'user',
+      content: [
+        { type: 'image', source: { type: 'base64', media_type: mediaType, data: base64Data } },
+        { type: 'text', text: prompt },
+      ],
+    }],
+  });
+
+  try {
+    const raw  = msg.content[0].text.trim();
+    const json = raw.match(/\{[\s\S]*\}/)?.[0];
+    return JSON.parse(json);
+  } catch {
+    return null;
+  }
+}
+
 export async function parseDenialLetter(text) {
   const prompt = `You are a patient advocate helping someone understand their insurance denial letter.
 

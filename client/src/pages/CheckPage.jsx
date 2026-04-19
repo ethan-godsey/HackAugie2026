@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext.jsx';
-import { ClipboardList, FileSearch, Scale, BookOpen, X, AlertTriangle, Check, Lock, AlertCircle, MessageSquare } from 'lucide-react';
+import { ClipboardList, FileSearch, Scale, BookOpen, X, AlertTriangle, Check, Lock, AlertCircle, MessageSquare, Upload, FileText, Image } from 'lucide-react';
 
 const CPT_GROUPS = [
   { label: 'Diagnostic Evaluations', codes: [
@@ -103,6 +103,7 @@ export default function CheckPage() {
   const { user } = useAuth();
   const [tab, setTab]               = useState('manual');
   const [denialText, setDenialText] = useState('');
+  const [uploadFile, setUploadFile] = useState(null);
   const [parsing, setParsing]       = useState(false);
   const [parsed, setParsed]         = useState(false);
   const [parsedData, setParsedData] = useState(null);
@@ -118,16 +119,28 @@ export default function CheckPage() {
     try {
       const { data } = await axios.post('/api/parse', { text: denialText });
       setParsedData(data);
-      setForm(f => ({
-        ...f,
-        cptCode:      data.cptCode      || f.cptCode,
-        denialReason: data.denialReason || f.denialReason,
-        planType:     f.planType,
-      }));
+      setForm(f => ({ ...f, cptCode: data.cptCode || f.cptCode, denialReason: data.denialReason || f.denialReason }));
       setParsed(true);
     } catch {
       setParseError('Could not parse — fill the fields manually below.');
       setTab('manual');
+    } finally {
+      setParsing(false);
+    }
+  }
+
+  async function handleParseFile() {
+    if (!uploadFile) return;
+    setParsing(true); setParseError(''); setParsed(false); setParsedData(null);
+    try {
+      const fd = new FormData();
+      fd.append('file', uploadFile);
+      const { data } = await axios.post('/api/parse-file', fd, { headers: { 'Content-Type': 'multipart/form-data' } });
+      setParsedData(data);
+      setForm(f => ({ ...f, cptCode: data.cptCode || f.cptCode, denialReason: data.denialReason || f.denialReason }));
+      setParsed(true);
+    } catch {
+      setParseError('Could not extract from file — try pasting the text manually.');
     } finally {
       setParsing(false);
     }
@@ -239,23 +252,71 @@ export default function CheckPage() {
           <div>
             {!parsed ? (
               <>
+                {/* Text paste */}
                 <div className="field">
-                  <label>Your denial letter text</label>
+                  <label>Paste letter text</label>
                   <textarea
                     value={denialText}
-                    onChange={e => setDenialText(e.target.value)}
-                    placeholder="Paste the full text from your insurance denial letter here. We'll automatically extract the CPT code, denial reason, and other key details using AI…"
-                    style={{ minHeight: 160 }}
+                    onChange={e => { setDenialText(e.target.value); setUploadFile(null); }}
+                    placeholder="Paste the full text of your denial letter here…"
+                    style={{ minHeight: 130, opacity: uploadFile ? .4 : 1 }}
+                    disabled={!!uploadFile}
                   />
                 </div>
+
+                {/* Divider */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '.75rem 0', color: 'rgba(255,255,255,.35)', fontSize: '.78rem' }}>
+                  <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,.12)' }} />
+                  or upload a file
+                  <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,.12)' }} />
+                </div>
+
+                {/* File upload zone */}
+                <label style={{
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                  gap: 8, padding: '1.1rem', cursor: 'pointer',
+                  border: `1.5px dashed ${uploadFile ? 'rgba(52,211,153,.6)' : 'rgba(255,255,255,.22)'}`,
+                  borderRadius: 'var(--r-s)',
+                  background: uploadFile ? 'rgba(52,211,153,.08)' : 'rgba(255,255,255,.05)',
+                  transition: 'all .15s',
+                }}>
+                  <input
+                    type="file"
+                    accept="image/*,.pdf"
+                    style={{ display: 'none' }}
+                    onChange={e => { const f = e.target.files?.[0]; if (f) { setUploadFile(f); setDenialText(''); } }}
+                  />
+                  {uploadFile ? (
+                    <>
+                      {uploadFile.type.startsWith('image/') ? <Image size={22} style={{ color: '#34D399' }} /> : <FileText size={22} style={{ color: '#34D399' }} />}
+                      <span style={{ fontSize: '.82rem', color: '#34D399', fontWeight: 600 }}>{uploadFile.name}</span>
+                      <button
+                        type="button"
+                        onClick={e => { e.preventDefault(); setUploadFile(null); }}
+                        style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,.4)', fontSize: '.72rem', cursor: 'pointer', fontFamily: 'inherit' }}
+                      >
+                        Remove
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <Upload size={22} style={{ color: 'rgba(255,255,255,.35)' }} />
+                      <span style={{ fontSize: '.82rem', color: 'rgba(255,255,255,.5)', textAlign: 'center' }}>
+                        Click to upload a <strong style={{ color: 'rgba(255,255,255,.75)' }}>PDF</strong> or <strong style={{ color: 'rgba(255,255,255,.75)' }}>image</strong> of your denial letter
+                      </span>
+                    </>
+                  )}
+                </label>
+
                 <button
                   className="btn btn-primary btn-full"
-                  onClick={handleParse}
-                  disabled={parsing || denialText.trim().length < 20}
+                  onClick={uploadFile ? handleParseFile : handleParse}
+                  disabled={parsing || (uploadFile ? false : denialText.trim().length < 20)}
+                  style={{ marginTop: '1rem' }}
                 >
                   {parsing
-                    ? <><span className="spinner" /> Reading your letter with AI…</>
-                    : 'Extract details from letter →'}
+                    ? <><span className="spinner" /> Reading with AI…</>
+                    : 'Extract details →'}
                 </button>
                 {parseError && <p className="error-msg"><AlertCircle size={14} style={{ flexShrink: 0 }} /> {parseError}</p>}
               </>
@@ -413,18 +474,14 @@ export default function CheckPage() {
               </div>
             )}
 
-            {result.verdict !== 'GREEN' && (
-              <>
-                <div className="divider" />
-                <button
-                  className="btn btn-primary"
-                  style={{ width: '100%' }}
-                  onClick={() => navigate('/appeal', { state: { ...form, ...result } })}
-                >
-                  Generate appeal letter →
-                </button>
-              </>
-            )}
+            <div className="divider" />
+            <button
+              className="btn btn-primary"
+              style={{ width: '100%' }}
+              onClick={() => navigate('/appeal', { state: { ...form, ...result } })}
+            >
+              Generate appeal letter →
+            </button>
           </div>
         </div>
       )}

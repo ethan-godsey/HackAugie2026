@@ -511,12 +511,11 @@ textarea { resize: vertical; min-height: 120px; line-height: 1.6; }
   border-top: 1px solid;
   display: flex; flex-direction: column; gap: .85rem;
 }
-.verdict-explanation { color: rgba(255,255,255,.8); }
 .verdict.RED    .verdict-body-area { border-color: var(--red-border); }
 .verdict.YELLOW .verdict-body-area { border-color: var(--amber-border); }
 .verdict.GREEN  .verdict-body-area { border-color: var(--green-border); }
 
-.verdict-explanation { font-size: .875rem; color: var(--text-2); line-height: 1.7; }
+.verdict-explanation { font-size: .875rem; color: #fff; line-height: 1.7; }
 
 .verdict-equivalent {
   display: flex; align-items: flex-start; gap: 10px;
