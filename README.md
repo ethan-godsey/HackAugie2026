@@ -1,7 +1,7 @@
 # HackAugie2026
 Our 24-hour hackathon project
 
-# ParityCheck
+# Appeally
 
 Fight mental health insurance claim denials using federal parity law (MHPAEA).
 
@@ -25,16 +25,8 @@ cd .. && npm run dev
 Frontend: http://localhost:5173  
 Backend:  http://localhost:3001
 
-## Team ownership
-
-| Person | Files |
-|--------|-------|
-| Person 1 (Backend) | server/index.js, server/services/*, server/routes/* |
-| Person 2 (Frontend) | client/src/pages/*, client/src/index.css |
-| Person 3 (Data+Pitch) | server/data/cptDatabase.js, pitch deck, demo scenarios |
-
 ## Demo flow for judges
 
 1. CPT 90837 + "Not medically necessary" + PPO → RED verdict
 2. Fill patient details → appeal letter in ~5 seconds  
-3. Save → tracker dashboard shows status timeline
+3. Download to upload or send to the insurance → my appeals shows all the appeal letters if logged in.

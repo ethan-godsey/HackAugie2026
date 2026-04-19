@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext.jsx';
-import { Search, ClipboardList, FileSearch, Scale, BookOpen, X, AlertTriangle, Check, Lock, AlertCircle, MessageSquare } from 'lucide-react';
+import { ClipboardList, FileSearch, Scale, BookOpen, X, AlertTriangle, Check, Lock, AlertCircle, MessageSquare } from 'lucide-react';
 
 const CPT_GROUPS = [
   { label: 'Diagnostic Evaluations', codes: [
@@ -83,12 +83,12 @@ const chipStyle = {
   display: 'inline-flex',
   alignItems: 'center',
   gap: 5,
-  background: '#fff',
-  border: '1px solid var(--border-1)',
+  background: 'rgba(255,255,255,.1)',
+  border: '1px solid rgba(255,255,255,.2)',
   borderRadius: 'var(--r-s)',
   padding: '4px 10px',
   fontSize: '.82rem',
-  color: 'var(--text-1)',
+  color: 'rgba(255,255,255,.85)',
   fontWeight: 500,
 };
 
@@ -158,7 +158,15 @@ export default function CheckPage() {
       {/* Hero */}
       <div className="hero">
         <div className="hero-inner">
-          <div className="hero-badge"><Scale size={13} /> MHPAEA Federal Parity Law</div>
+          <a
+            className="hero-badge"
+            href="https://www.cms.gov/marketplace/private-health-insurance/mental-health-parity-addiction-equity"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ textDecoration: 'none' }}
+          >
+            <Scale size={13} /> MHPAEA Federal Parity Law ↗
+          </a>
           <h1>Your insurer denied your<br/><em>mental health claim,</em> Fight back!</h1>
           <p>Over 70% of mental health denials violate federal law. Check yours in seconds — and generate a lawyer-quality appeal letter instantly.</p>
           <div className="hero-stats">
@@ -202,27 +210,22 @@ export default function CheckPage() {
         <div style={{
           display: 'flex', alignItems: 'center', gap: 10,
           padding: '10px 14px', marginBottom: '1rem',
-          background: '#F8FAFF', border: '1px solid var(--border-2)',
-          borderRadius: 'var(--r-s)', fontSize: '.82rem', color: 'var(--text-2)',
+          background: 'rgba(255,255,255,.08)', border: '1px solid rgba(255,255,255,.15)',
+          borderRadius: 'var(--r-s)', fontSize: '.82rem', color: 'rgba(255,255,255,.65)',
           flexWrap: 'wrap',
         }}>
           <Lock size={14} style={{ flexShrink: 0 }} />
           <span>
-            <Link to="/auth" state={{ tab: 'login' }} style={{ color: 'var(--brand)', fontWeight: 600 }}>Sign in</Link>
+            <Link to="/auth" state={{ tab: 'login' }} style={{ color: '#A5B4FC', fontWeight: 600 }}>Sign in</Link>
             {' '}or{' '}
-            <Link to="/auth" state={{ tab: 'register' }} style={{ color: 'var(--brand)', fontWeight: 600 }}>create a free account</Link>
+            <Link to="/auth" state={{ tab: 'register' }} style={{ color: '#A5B4FC', fontWeight: 600 }}>create a free account</Link>
             {' '}to save your appeal letters.
           </span>
         </div>
       )}
 
-      {/* Check card */}
-      <div className="card">
-        <div className="card-title">
-          <span className="card-icon"><Search size={16} /></span>
-          Check your denial
-        </div>
-
+      {/* Check form */}
+      <div>
         <div className="tab-bar">
           <button className={`tab-btn${tab === 'manual' ? ' active' : ''}`} onClick={() => setTab('manual')} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
             <ClipboardList size={15} /> Enter manually
@@ -260,24 +263,24 @@ export default function CheckPage() {
               <div>
                 {/* Plain-English summary */}
                 <div style={{
-                  background: 'var(--brand-50)',
-                  border: '1px solid var(--brand-light)',
+                  background: 'rgba(99,102,241,.18)',
+                  border: '1px solid rgba(165,180,252,.25)',
                   borderRadius: 'var(--r-m)',
                   padding: '1rem 1.1rem',
                   marginBottom: '1rem',
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: '.55rem' }}>
-                    <MessageSquare size={16} style={{ flexShrink: 0, color: 'var(--brand-dark)' }} />
-                    <strong style={{ color: 'var(--brand-dark)', fontSize: '.9rem' }}>What this denial means for you</strong>
+                    <MessageSquare size={16} style={{ flexShrink: 0, color: '#A5B4FC' }} />
+                    <strong style={{ color: '#fff', fontSize: '.9rem' }}>What this denial means for you</strong>
                   </div>
-                  <p style={{ fontSize: '.9rem', color: 'var(--text-1)', lineHeight: 1.65, margin: 0 }}>
+                  <p style={{ fontSize: '.9rem', color: 'rgba(255,255,255,.75)', lineHeight: 1.65, margin: 0 }}>
                     {parsedData?.summary || 'Your claim was denied. Review the extracted details below.'}
                   </p>
                 </div>
 
                 {/* Extracted fields chips */}
                 <div style={{ marginBottom: '1rem' }}>
-                  <div style={{ fontSize: '.78rem', fontWeight: 600, color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: '.05em', marginBottom: '.5rem' }}>
+                  <div style={{ fontSize: '.78rem', fontWeight: 600, color: 'rgba(255,255,255,.4)', textTransform: 'uppercase', letterSpacing: '.05em', marginBottom: '.5rem' }}>
                     Details we extracted
                   </div>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>

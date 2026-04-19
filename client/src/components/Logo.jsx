@@ -61,10 +61,10 @@ export function LogoFull() {
         </div>
         <div style={{
           fontSize: '.8rem',
-          color: '#5A7A9A',
+          color: 'rgba(255,255,255,.45)',
           marginTop: 6,
           letterSpacing: '.02em',
-          borderTop: '1px solid #D4E6F5',
+          borderTop: '1px solid rgba(255,255,255,.12)',
           paddingTop: 6,
         }}>
           <span style={{ color: '#1A68B3', fontWeight: 600 }}>Fight Denials.</span>
