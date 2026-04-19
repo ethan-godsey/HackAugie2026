@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
+import { useAuth } from '../context/AuthContext.jsx';
 
 const INSURER_APPEALS_ADDRESS = {
   'unitedhealthcare': { name: 'UnitedHealthcare', addr: 'UnitedHealthcare Appeals\nP.O. Box 30432\nSalt Lake City, UT 84130' },
@@ -119,14 +120,16 @@ const STATUS_LABEL = { submitted: 'Submitted', appealed: 'Appealed', won: 'Won',
 
 export default function TrackerPage() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [appeals, setAppeals] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!user) { setLoading(false); return; }
     axios.get('/api/tracker')
       .then(r => setAppeals(r.data))
       .finally(() => setLoading(false));
-  }, []);
+  }, [user]);
 
   async function updateStatus(id, status) {
     await axios.patch(`/api/tracker/${id}/status`, { status });
@@ -134,6 +137,30 @@ export default function TrackerPage() {
   }
 
   const myAppeals = appeals;
+
+  if (!user) {
+    return (
+      <div className="page">
+        <div className="card" style={{ textAlign: 'center', padding: '3rem 2rem' }}>
+          <div style={{ fontSize: '2.75rem', marginBottom: '1rem' }}>🔒</div>
+          <h2 style={{ fontSize: '1.25rem', fontWeight: 800, letterSpacing: '-.02em', marginBottom: '.5rem' }}>
+            Sign in to view your appeals
+          </h2>
+          <p style={{ fontSize: '.9rem', color: 'var(--text-2)', lineHeight: 1.6, maxWidth: 340, margin: '0 auto 1.5rem' }}>
+            Create a free account to save your appeal letters, track their status, and download them anytime.
+          </p>
+          <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>
+            <Link to="/auth" state={{ tab: 'register' }} className="btn btn-primary">
+              Create free account →
+            </Link>
+            <Link to="/auth" state={{ tab: 'login' }} className="btn">
+              Sign in
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="page">
