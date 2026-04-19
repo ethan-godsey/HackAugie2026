@@ -77,6 +77,19 @@ const DENIAL_REASONS = [
 
 const PLAN_TYPES = ['PPO','HMO','EPO','HDHP','Medicaid','Medicare Advantage','Marketplace ACA','Employer self-funded','TRICARE'];
 
+const chipStyle = {
+  display: 'inline-flex',
+  alignItems: 'center',
+  gap: 5,
+  background: '#fff',
+  border: '1px solid var(--border-1)',
+  borderRadius: 'var(--r-s)',
+  padding: '4px 10px',
+  fontSize: '.82rem',
+  color: 'var(--text-1)',
+  fontWeight: 500,
+};
+
 const VERDICT_META = {
   RED:    { icon: '✕', badge: 'Likely parity violation',   heading: 'Strong grounds to appeal under federal law' },
   YELLOW: { icon: '!', badge: 'Possible parity violation', heading: 'This denial is worth challenging' },
@@ -85,34 +98,40 @@ const VERDICT_META = {
 
 export default function CheckPage() {
   const navigate = useNavigate();
-  const [tab, setTab]             = useState('manual');
+  const [tab, setTab]               = useState('manual');
   const [denialText, setDenialText] = useState('');
-  const [parsing, setParsing]     = useState(false);
-  const [parsed, setParsed]       = useState(false);
+  const [parsing, setParsing]       = useState(false);
+  const [parsed, setParsed]         = useState(false);
+  const [parsedData, setParsedData] = useState(null);
   const [parseError, setParseError] = useState('');
-  const [form, setForm]           = useState({ cptCode: '', denialReason: '', planType: '' });
-  const [result, setResult]       = useState(null);
-  const [loading, setLoading]     = useState(false);
-  const [error, setError]         = useState('');
+  const [form, setForm]             = useState({ cptCode: '', denialReason: '', planType: '' });
+  const [result, setResult]         = useState(null);
+  const [loading, setLoading]       = useState(false);
+  const [error, setError]           = useState('');
   const set = k => e => setForm(f => ({ ...f, [k]: e.target.value }));
 
   async function handleParse() {
-    setParsing(true); setParseError(''); setParsed(false);
+    setParsing(true); setParseError(''); setParsed(false); setParsedData(null);
     try {
       const { data } = await axios.post('/api/parse', { text: denialText });
+      setParsedData(data);
       setForm(f => ({
         ...f,
         cptCode:      data.cptCode      || f.cptCode,
         denialReason: data.denialReason || f.denialReason,
+        planType:     f.planType,
       }));
       setParsed(true);
-      setTab('manual');
     } catch {
       setParseError('Could not parse — fill the fields manually below.');
       setTab('manual');
     } finally {
       setParsing(false);
     }
+  }
+
+  function handleContinueFromParse() {
+    setTab('manual');
   }
 
   async function handleCheck(e) {
@@ -193,32 +212,108 @@ export default function CheckPage() {
 
         {tab === 'paste' ? (
           <div>
-            <div className="field">
-              <label>Your denial letter text</label>
-              <textarea
-                value={denialText}
-                onChange={e => setDenialText(e.target.value)}
-                placeholder="Paste the full text from your insurance denial letter here. We'll automatically extract the CPT code, denial reason, and other key details using AI…"
-                style={{ minHeight: 160 }}
-              />
-            </div>
-            <button
-              className="btn btn-primary btn-full"
-              onClick={handleParse}
-              disabled={parsing || denialText.trim().length < 20}
-            >
-              {parsing
-                ? <><span className="spinner" /> Reading your letter with AI…</>
-                : 'Extract details from letter →'}
-            </button>
-            {parseError && <p className="error-msg">⚠ {parseError}</p>}
+            {!parsed ? (
+              <>
+                <div className="field">
+                  <label>Your denial letter text</label>
+                  <textarea
+                    value={denialText}
+                    onChange={e => setDenialText(e.target.value)}
+                    placeholder="Paste the full text from your insurance denial letter here. We'll automatically extract the CPT code, denial reason, and other key details using AI…"
+                    style={{ minHeight: 160 }}
+                  />
+                </div>
+                <button
+                  className="btn btn-primary btn-full"
+                  onClick={handleParse}
+                  disabled={parsing || denialText.trim().length < 20}
+                >
+                  {parsing
+                    ? <><span className="spinner" /> Reading your letter with AI…</>
+                    : 'Extract details from letter →'}
+                </button>
+                {parseError && <p className="error-msg">⚠ {parseError}</p>}
+              </>
+            ) : (
+              <div>
+                {/* Plain-English summary */}
+                <div style={{
+                  background: 'var(--brand-50)',
+                  border: '1px solid var(--brand-light)',
+                  borderRadius: 'var(--r-m)',
+                  padding: '1rem 1.1rem',
+                  marginBottom: '1rem',
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: '.55rem' }}>
+                    <span style={{ fontSize: '1.1rem' }}>💬</span>
+                    <strong style={{ color: 'var(--brand-dark)', fontSize: '.9rem' }}>What this denial means for you</strong>
+                  </div>
+                  <p style={{ fontSize: '.9rem', color: 'var(--text-1)', lineHeight: 1.65, margin: 0 }}>
+                    {parsedData?.summary || 'Your claim was denied. Review the extracted details below.'}
+                  </p>
+                </div>
+
+                {/* Extracted fields chips */}
+                <div style={{ marginBottom: '1rem' }}>
+                  <div style={{ fontSize: '.78rem', fontWeight: 600, color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: '.05em', marginBottom: '.5rem' }}>
+                    Details we extracted
+                  </div>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                    {parsedData?.cptCode && (
+                      <div style={chipStyle}>
+                        <span style={{ opacity: .6 }}>CPT</span> {parsedData.cptCode}
+                      </div>
+                    )}
+                    {parsedData?.denialReason && (
+                      <div style={chipStyle}>
+                        <span style={{ opacity: .6 }}>Reason</span>{' '}
+                        {DENIAL_REASONS.find(d => d.value === parsedData.denialReason)?.label || parsedData.denialReason}
+                      </div>
+                    )}
+                    {parsedData?.insurerName && (
+                      <div style={chipStyle}>
+                        <span style={{ opacity: .6 }}>Insurer</span> {parsedData.insurerName}
+                      </div>
+                    )}
+                    {parsedData?.denialDate && (
+                      <div style={chipStyle}>
+                        <span style={{ opacity: .6 }}>Date</span>{' '}
+                        {new Date(parsedData.denialDate + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                      </div>
+                    )}
+                    {parsedData?.diagnosisCode && (
+                      <div style={chipStyle}>
+                        <span style={{ opacity: .6 }}>Dx</span> {parsedData.diagnosisCode}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', gap: 10 }}>
+                  <button
+                    className="btn"
+                    style={{ flex: 1 }}
+                    onClick={() => { setParsed(false); setParsedData(null); }}
+                  >
+                    ← Re-paste letter
+                  </button>
+                  <button
+                    className="btn btn-primary"
+                    style={{ flex: 2 }}
+                    onClick={handleContinueFromParse}
+                  >
+                    Looks right, continue →
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         ) : (
           <form onSubmit={handleCheck}>
             {parsed && (
-              <div className="success-banner">
+              <div className="success-banner" style={{ marginBottom: '1rem' }}>
                 <span>✓</span>
-                Details extracted from your denial letter — review and confirm below.
+                Details extracted from your denial letter — review and confirm below, then check for a parity violation.
               </div>
             )}
             {parseError && (

@@ -1,15 +1,9 @@
 import { Router } from 'express';
-import { SEED_APPEALS } from '../data/seedData.js';
 import { getUserFromReq } from './auth.js';
 
 export const trackerRouter = Router();
 
 const appeals = new Map();
-let seedId = 0;
-for (const a of SEED_APPEALS) {
-  const id = `seed_${seedId++}`;
-  appeals.set(id, { id, ...a });
-}
 
 trackerRouter.post('/', (req, res) => {
   const user = getUserFromReq(req);
@@ -63,7 +57,12 @@ trackerRouter.get('/stats', (_, res) => {
   res.json({ total, won, winRate, leaderboard, topCodes });
 });
 
-trackerRouter.get('/', (_, res) => res.json([...appeals.values()].reverse()));
+trackerRouter.get('/', (req, res) => {
+  const user = getUserFromReq(req);
+  if (!user) return res.json([]);
+  const mine = [...appeals.values()].filter(a => a.userId === user.id).reverse();
+  res.json(mine);
+});
 
 trackerRouter.get('/:id', (req, res) => {
   const a = appeals.get(req.params.id);

@@ -30,7 +30,13 @@ Write exactly 3 paragraphs:
 2. Cite ${statute} precisely. Argue insurer covers ${medicalEquivalentName} (CPT ${medicalEquivalent}) but applied more restrictive criteria to the equivalent mental health service — a direct parity violation
 3. Demand written reversal within 30 days or escalation to state insurance commissioner and DOL EBSA complaint
 
-Format as a formal letter with today's date. Be direct and cite law precisely.`;
+FORMATTING RULES — follow exactly:
+- Output plain text only. Zero markdown. No asterisks, no # headers, no --- dividers.
+- Start with today's date on its own line (format: April 18, 2026).
+- Then a blank line, then the insurer name and address block, then Re: line, then salutation.
+- Separate every paragraph and section with a single blank line.
+- Signature block: "Respectfully submitted," then a blank line, then the patient name, then "Patient / Authorized Representative", then Plan ID.
+- Do not include any placeholder text in brackets. If a value is unknown, omit that line entirely.`;
 
   const msg = await client.messages.create({
     model: 'claude-sonnet-4-6',
@@ -41,13 +47,13 @@ Format as a formal letter with today's date. Be direct and cite law precisely.`;
 }
 
 export async function parseDenialLetter(text) {
-  const prompt = `You are a medical billing expert. Extract structured data from the insurance denial letter below.
+  const prompt = `You are a patient advocate helping someone understand their insurance denial letter.
 
-Return ONLY a valid JSON object — no markdown, no explanation, just the JSON.
-Use null for any field you cannot find.
+Read the letter carefully and return ONLY a valid JSON object — no markdown, no explanation.
 
 {
-  "cptCode": "the CPT procedure code that was denied (digits only, e.g. 90837) or null",
+  "summary": "2-3 sentence plain English explanation of what this denial means for the patient. Explain what was denied, why the insurer says they denied it, and what it means practically. Write as if speaking directly to the patient.",
+  "cptCode": "the CPT procedure code that was denied (e.g. 90837) or null",
   "denialReason": "exactly one of: medical_necessity | visit_cap | prior_auth | documentation | not_covered | wrong_cpt | bundling_error | wrong_modifier | out_of_network | timely_filing | upcoding_flag | coordination — pick the closest match or null",
   "insurerName": "the insurance company name or null",
   "planId": "member ID or plan ID or null",
@@ -60,13 +66,13 @@ ${text}`;
 
   const msg = await client.messages.create({
     model: 'claude-sonnet-4-6',
-    max_tokens: 512,
+    max_tokens: 700,
     messages: [{ role: 'user', content: prompt }],
   });
 
   try {
     const raw  = msg.content[0].text.trim();
-    const json = raw.match(/\{[\s\S]*?\}/)?.[0];
+    const json = raw.match(/\{[\s\S]*\}/)?.[0];
     return JSON.parse(json);
   } catch {
     return null;

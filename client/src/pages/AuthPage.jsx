@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext.jsx';
@@ -11,6 +11,10 @@ export default function AuthPage() {
   const from      = location.state?.from || '/';
 
   const [tab, setTab]       = useState(location.state?.tab || 'login');
+
+  useEffect(() => {
+    if (location.state?.tab) setTab(location.state.tab);
+  }, [location.state?.tab]);
   const [loading, setLoading] = useState(false);
   const [error, setError]   = useState('');
 

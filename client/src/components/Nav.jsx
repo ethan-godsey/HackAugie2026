@@ -1,4 +1,4 @@
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import { LogoWordmark } from './Logo.jsx';
 
@@ -14,9 +14,9 @@ const ITEMS = [
     label: 'Generate appeal',
   },
   {
-    to: '/tracker', short: 'Tracker',
+    to: '/tracker', short: 'My Appeals',
     icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>,
-    label: 'Track appeals',
+    label: 'My appeals',
   },
 ];
 
@@ -37,7 +37,6 @@ function Avatar({ name }) {
 
 export default function Nav() {
   const { user, logout } = useAuth();
-  const navigate = useNavigate();
 
   return (
     <>
@@ -65,12 +64,12 @@ export default function Nav() {
             </div>
           ) : (
             <div style={{ display: 'flex', gap: 6 }}>
-              <button className="btn btn-ghost btn-sm" onClick={() => navigate('/auth', { state: { tab: 'login' } })}>
+              <Link className="btn btn-ghost btn-sm" to="/auth" state={{ tab: 'login' }}>
                 Sign in
-              </button>
-              <button className="btn btn-primary btn-sm" onClick={() => navigate('/auth', { state: { tab: 'register' } })}>
+              </Link>
+              <Link className="btn btn-primary btn-sm" to="/auth" state={{ tab: 'register' }}>
                 Create account
-              </button>
+              </Link>
             </div>
           )}
         </div>
@@ -85,19 +84,25 @@ export default function Nav() {
             <span>{item.short}</span>
           </NavLink>
         ))}
-        <button
-          className="bottom-nav-item"
-          onClick={() => user ? logout() : navigate('/auth')}
-          style={{ border: 'none', background: 'none', cursor: 'pointer', fontFamily: 'inherit' }}
-        >
-          <span className="bottom-nav-icon">
-            {user
-              ? <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-              : <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-            }
-          </span>
-          <span>{user ? 'Sign out' : 'Sign in'}</span>
-        </button>
+        {user ? (
+          <button
+            className="bottom-nav-item"
+            onClick={logout}
+            style={{ border: 'none', background: 'none', cursor: 'pointer', fontFamily: 'inherit' }}
+          >
+            <span className="bottom-nav-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            </span>
+            <span>Sign out</span>
+          </button>
+        ) : (
+          <Link className="bottom-nav-item" to="/auth" state={{ tab: 'login' }}>
+            <span className="bottom-nav-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </span>
+            <span>Sign in</span>
+          </Link>
+        )}
       </nav>
     </>
   );
